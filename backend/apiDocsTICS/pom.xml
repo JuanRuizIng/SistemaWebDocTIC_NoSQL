@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>backend</artifactId>
+	<artifactId>apiDocsTICS</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>backend</name>
+	<name>apiDocsTICS</name>
 	<description>API REST with Spring Boot and Mongo</description>
 	<url/>
 	<licenses>
