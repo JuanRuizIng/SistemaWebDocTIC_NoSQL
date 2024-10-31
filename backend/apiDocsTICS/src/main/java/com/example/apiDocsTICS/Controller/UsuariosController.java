@@ -20,7 +20,7 @@ import com.example.apiDocsTICS.Service.IUsuariosService;
 
 @RestController
 @RequestMapping("/usuarios")
-public class UsuarioController {
+public class UsuariosController {
 
     @Autowired
     private IUsuariosService usuarioService;

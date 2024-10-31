@@ -85,12 +85,12 @@ public class UsuariosServiceImp implements IUsuariosService {
                 if (contrasena.getContrasena().equals(nuevaContrasenaValor)) {
                     throw new IllegalArgumentException("La nueva contraseña no puede ser igual a una contraseña anterior");
                 }
-                contrasena.setEstado(Estado.Inactiva.toString());
+                contrasena.setEstado(Estado.Inactiva);
             }
 
             Contrasenas nuevaContrasena = new Contrasenas();
             nuevaContrasena.setContrasena(nuevaContrasenaValor);
-            nuevaContrasena.setEstado(Estado.Activa.toString());
+            nuevaContrasena.setEstado(Estado.Activa);
             nuevaContrasena.setFecha(LocalDateTime.now());
             usuarioExistente.getContrasenas().add(nuevaContrasena);
 
