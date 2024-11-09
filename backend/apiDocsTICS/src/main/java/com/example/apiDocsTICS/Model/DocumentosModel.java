@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
+import com.example.apiDocsTICS.Model.ENUM.Visibilidad;
 import com.example.apiDocsTICS.Model.Documents.*;
+
 
 @Document("Documentos")
 @Data
@@ -16,7 +18,7 @@ public class DocumentosModel {
     @Id
     private String _id;
     private String tituloDoc;
-    private String visibilidad;
+    private Visibilidad visibilidad;
     private String URL;
     private String descripcion;
     private List<Categoria> categorias;
