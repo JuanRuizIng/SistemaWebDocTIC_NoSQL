@@ -1,5 +1,6 @@
 package com.example.apiDocsTICS.DTO;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,8 @@ public class DocumentosDTO {
     private String id;
     private String tituloDoc;
     private Visibilidad visibilidad;
-    private String url;
+    @JsonProperty("URL")
+    private String URL;
     private String descripcion;
     private List<CategoriaDTO> categorias;
     private List<DescargaDTO> descargas;

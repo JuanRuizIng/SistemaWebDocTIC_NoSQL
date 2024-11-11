@@ -3,18 +3,17 @@ package com.example.apiDocsTICS.Controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.apiDocsTICS.DTO.Documents.CategoriaDTO;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.apiDocsTICS.DTO.Documents.*;
-import com.example.apiDocsTICS.Model.Documents.*;
 import com.example.apiDocsTICS.DTO.DocumentosDTO;
+import com.example.apiDocsTICS.DTO.Documents.*;
 import com.example.apiDocsTICS.Exception.RecursoNoEncontradoException;
 import com.example.apiDocsTICS.Model.DocumentosModel;
+import com.example.apiDocsTICS.Model.Documents.*;
 import com.example.apiDocsTICS.Service.IDocumetosService;
 
 @RestController
@@ -38,6 +37,8 @@ public class DocumentosController {
             DocumentosModel documento = documentosService.buscarDocumento(documentoId);
             DocumentosDTO documentoDTO = mapModelToDTO(documento);
             return ResponseEntity.ok(documentoDTO);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID inválido");
         } catch (RecursoNoEncontradoException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
@@ -54,78 +55,145 @@ public class DocumentosController {
 
     // Métodos de ayuda para mapear entre Model y DTO
     private DocumentosModel mapDTOToModel(DocumentosDTO dto) {
-        // Implementa el mapeo de DTO a Model
-        // Puedes utilizar librerías como ModelMapper para simplificar
         DocumentosModel model = new DocumentosModel();
         model.set_id(dto.getId());
         model.setTituloDoc(dto.getTituloDoc());
         model.setVisibilidad(dto.getVisibilidad());
-        model.setURL(dto.getUrl());
+        model.setURL(dto.getURL());
         model.setDescripcion(dto.getDescripcion());
-        model.setCategorias(dto.getCategorias().stream().map(this::mapCategoriaDTOToModel).collect(Collectors.toList()));
-        model.setDescargas(dto.getDescargas().stream().map(this::mapDescargaDTOToModel).collect(Collectors.toList()));
-        model.setVistas(dto.getVistas().stream().map(this::mapVistaDTOToModel).collect(Collectors.toList()));
-        model.setValoraciones(dto.getValoraciones().stream().map(this::mapValoracionDTOToModel).collect(Collectors.toList()));
-        model.setInfoAutores(dto.getInfoAutores().stream().map(this::mapInfoAutorDTOToModel).collect(Collectors.toList()));
+        if (dto.getCategorias() != null) {
+            model.setCategorias(dto.getCategorias().stream()
+                    .map(this::mapCategoriaDTOToModel)
+                    .collect(Collectors.toList()));
+        }
+        if (dto.getDescargas() != null) {
+            model.setDescargas(dto.getDescargas().stream()
+                    .map(this::mapDescargaDTOToModel)
+                    .collect(Collectors.toList()));
+        }
+        if (dto.getVistas() != null) {
+            model.setVistas(dto.getVistas().stream()
+                    .map(this::mapVistaDTOToModel)
+                    .collect(Collectors.toList()));
+        }
+        if (dto.getValoraciones() != null) {
+            model.setValoraciones(dto.getValoraciones().stream()
+                    .map(this::mapValoracionDTOToModel)
+                    .collect(Collectors.toList()));
+        }
+        if (dto.getInfoAutores() != null) {
+            model.setInfoAutores(dto.getInfoAutores().stream()
+                    .map(this::mapInfoAutorDTOToModel)
+                    .collect(Collectors.toList()));
+        }
         model.setAbstracto(dto.getAbstracto());
         return model;
     }
 
     private DocumentosDTO mapModelToDTO(DocumentosModel model) {
-        // Implementa el mapeo de Model a DTO
         DocumentosDTO dto = new DocumentosDTO();
         dto.setId(model.get_id());
         dto.setTituloDoc(model.getTituloDoc());
         dto.setVisibilidad(model.getVisibilidad());
-        dto.setUrl(model.getURL());
+        dto.setURL(model.getURL());
         dto.setDescripcion(model.getDescripcion());
-        dto.setCategorias(model.getCategorias().stream().map(this::mapCategoriaModelToDTO).collect(Collectors.toList()));
-        dto.setDescargas(model.getDescargas().stream().map(this::mapDescargaModelToDTO).collect(Collectors.toList()));
-        dto.setVistas(model.getVistas().stream().map(this::mapVistaModelToDTO).collect(Collectors.toList()));
-        dto.setValoraciones(model.getValoraciones().stream().map(this::mapValoracionModelToDTO).collect(Collectors.toList()));
-        dto.setInfoAutores(model.getInfoAutores().stream().map(this::mapInfoAutorModelToDTO).collect(Collectors.toList()));
+        if (model.getCategorias() != null) {
+            dto.setCategorias(model.getCategorias().stream()
+                    .map(this::mapCategoriaModelToDTO)
+                    .collect(Collectors.toList()));
+        }
+        if (model.getDescargas() != null) {
+            dto.setDescargas(model.getDescargas().stream()
+                    .map(this::mapDescargaModelToDTO)
+                    .collect(Collectors.toList()));
+        }
+        if (model.getVistas() != null) {
+            dto.setVistas(model.getVistas().stream()
+                    .map(this::mapVistaModelToDTO)
+                    .collect(Collectors.toList()));
+        }
+        if (model.getValoraciones() != null) {
+            dto.setValoraciones(model.getValoraciones().stream()
+                    .map(this::mapValoracionModelToDTO)
+                    .collect(Collectors.toList()));
+        }
+        if (model.getInfoAutores() != null) {
+            dto.setInfoAutores(model.getInfoAutores().stream()
+                    .map(this::mapInfoAutorModelToDTO)
+                    .collect(Collectors.toList()));
+        }
         dto.setAbstracto(model.getAbstracto());
         return dto;
     }
 
     // Métodos de mapeo para documentos embebidos
     private Categoria mapCategoriaDTOToModel(CategoriaDTO dto) {
-        return new Categoria(dto.getCategoriaId());
+        return new Categoria(new ObjectId(dto.getCategoriaId()));
     }
 
     private CategoriaDTO mapCategoriaModelToDTO(Categoria model) {
-        return new CategoriaDTO(model.getCategoriaId());
+        return new CategoriaDTO(model.getCategoriaId().toHexString());
     }
 
     private Descarga mapDescargaDTOToModel(DescargaDTO dto) {
-        return new Descarga(dto.getUsuarioId(), dto.getFechaDescarga());
+        return new Descarga(
+                new ObjectId(dto.getUsuarioId()),
+                dto.getFechaDescarga()
+        );
     }
 
     private DescargaDTO mapDescargaModelToDTO(Descarga model) {
-        return new DescargaDTO(model.getUsuarioId(), model.getFechaDescarga());
+        return new DescargaDTO(
+                model.getUsuarioId().toHexString(),
+                model.getFechaDescarga()
+        );
     }
 
     private Vista mapVistaDTOToModel(VistaDTO dto) {
-        return new Vista(dto.getUsuarioId(), dto.getFechaVista());
+        return new Vista(
+                new ObjectId(dto.getUsuarioId()),
+                dto.getFechaVista()
+        );
     }
 
     private VistaDTO mapVistaModelToDTO(Vista model) {
-        return new VistaDTO(model.getUsuarioId(), model.getFechaVista());
+        return new VistaDTO(
+                model.getUsuarioId().toHexString(),
+                model.getFechaVista()
+        );
     }
 
     private Valoracion mapValoracionDTOToModel(ValoracionDTO dto) {
-        return new Valoracion(dto.getUsuarioId(), dto.getValoracion(), dto.getFechaValora());
+        return new Valoracion(
+                new ObjectId(dto.getUsuarioId()),
+                dto.getValoracion(),
+                dto.getFechaValora()
+        );
     }
 
     private ValoracionDTO mapValoracionModelToDTO(Valoracion model) {
-        return new ValoracionDTO(model.getUsuarioId(), model.getValoracion(), model.getFechaValora());
+        return new ValoracionDTO(
+                model.getUsuarioId().toHexString(),
+                model.getValoracion(),
+                model.getFechaValora()
+        );
     }
 
     private InfoAutor mapInfoAutorDTOToModel(InfoAutorDTO dto) {
-        return new InfoAutor(dto.getUsuarioId(), dto.getFechaPublicacion(), dto.getBiografia(), dto.getRol());
+        return new InfoAutor(
+                new ObjectId(dto.getUsuarioId()),
+                dto.getFechaPublicacion(),
+                dto.getBiografia(),
+                dto.getRol()
+        );
     }
 
     private InfoAutorDTO mapInfoAutorModelToDTO(InfoAutor model) {
-        return new InfoAutorDTO(model.getUsuarioId(), model.getFechaPublicacion(), model.getBiografia(), model.getRol());
+        return new InfoAutorDTO(
+                model.getUsuarioId().toHexString(),
+                model.getFechaPublicacion(),
+                model.getBiografia(),
+                model.getRol()
+        );
     }
 }
