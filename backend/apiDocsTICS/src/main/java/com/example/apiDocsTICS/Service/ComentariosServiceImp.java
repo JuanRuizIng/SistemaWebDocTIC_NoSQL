@@ -11,10 +11,13 @@ import org.springframework.stereotype.Service;
 
 import com.example.apiDocsTICS.DTO.ComentarioResponseDTO;
 import com.example.apiDocsTICS.DTO.ReplicaResponseDTO;
+import com.example.apiDocsTICS.Exception.GlobalExceptionHandler;
+import com.example.apiDocsTICS.Exception.RecursoNoEncontradoException;
 import com.example.apiDocsTICS.Model.ComentariosModel;
 import com.example.apiDocsTICS.Model.Documents.ReplicasComentario;
 import com.example.apiDocsTICS.Model.UsuariosModel;
 import com.example.apiDocsTICS.Repository.IComentariosRepository;
+import com.example.apiDocsTICS.Repository.IDocumentosRepository;
 import com.example.apiDocsTICS.Repository.IUsuariosRepository;
 
 @Service
@@ -23,10 +26,20 @@ public class ComentariosServiceImp implements IComentariosService {
     private IComentariosRepository comentariosRepository;
     @Autowired
     private IUsuariosRepository usuariosRepository;
-
+    @Autowired
+    private IDocumentosRepository documentosRepository;
 
     @Override
     public String CrearComentario(ComentariosModel comentariosModel) {
+        // Verificar si el usuario ha visto el documento
+        ObjectId usuarioId = comentariosModel.getUsuarioId();
+        ObjectId documentoId = comentariosModel.getDocumentoId();
+        boolean haVistoDocumento = documentosRepository.existsByVistaUsuarioAndDocumentoId(usuarioId, documentoId);
+
+        if (!haVistoDocumento) {
+            return "El usuario no ha visto el documento y no puede comentar.";
+        }
+
         // Establecer la fecha actual en el comentario
         comentariosModel.setFecha(LocalDateTime.now());
         if (comentariosModel.getReplicasComentario() != null && !comentariosModel.getReplicasComentario().isEmpty()) {
@@ -73,7 +86,7 @@ public class ComentariosServiceImp implements IComentariosService {
     @Override
     public ComentarioResponseDTO buscarComentarioPorId(ObjectId id) {
         ComentariosModel comentario = comentariosRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Comentario no encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Comentario no encontrado"));
         
         ObjectId usuarioId = comentario.getUsuarioId();
         UsuariosModel usuario = usuariosRepository.findById(usuarioId)
@@ -123,3 +136,4 @@ public class ComentariosServiceImp implements IComentariosService {
         return "Réplica insertada con éxito";
     }
 }
+

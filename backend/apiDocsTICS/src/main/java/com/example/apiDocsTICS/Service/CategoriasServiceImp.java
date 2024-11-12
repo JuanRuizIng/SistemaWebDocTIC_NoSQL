@@ -18,10 +18,19 @@ import com.example.apiDocsTICS.Repository.ICategoriasRepository;
 @Service
 public class CategoriasServiceImp implements ICategoriasService {
     @Autowired 
-    ICategoriasRepository categoriaRepository;
+    private ICategoriasRepository categoriaRepository;
 
     @Override
     public String crearCategoria(CategoriasModel categoria) {
+        // Validar que si existe subIdCategoria, la categoría padre exista
+        if (categoria.getSubIdCategoria() != null) {
+            if (!ObjectId.isValid(categoria.getSubIdCategoria().toString())) {
+                throw new IllegalArgumentException("El subIdCategoria debe ser un ObjectId válido de 24 caracteres hexadecimales");
+            }
+            categoriaRepository.findById(categoria.getSubIdCategoria())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Categoria padre no encontrada con el Id: " + categoria.getSubIdCategoria()));
+        }
+        
         categoriaRepository.save(categoria);
         return "La categoria con id " + categoria.get_id() + " y nombre " + categoria.getNombre() + " ha sido creada";
     }
