@@ -11,4 +11,5 @@ import java.util.Date;
 public class DescargaDTO {
     private String usuarioId;
     private Date fechaDescarga;
+
 }

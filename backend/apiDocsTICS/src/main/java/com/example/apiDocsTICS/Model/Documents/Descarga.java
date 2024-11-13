@@ -7,9 +7,13 @@ import java.util.Date;
 import org.bson.types.ObjectId;
 
 @Data
-@AllArgsConstructor
+
 @NoArgsConstructor
 public class Descarga {
     private ObjectId usuarioId;
     private Date fechaDescarga;
+    public Descarga(ObjectId usuarioId, Date fechaDescarga) {
+        this.usuarioId = usuarioId;
+        this.fechaDescarga = fechaDescarga;
+    }
 }

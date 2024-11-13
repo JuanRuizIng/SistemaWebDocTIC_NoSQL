@@ -11,4 +11,5 @@ import java.util.Date;
 public class VistaDTO {
     private String usuarioId;
     private Date fechaVista;
+
 }

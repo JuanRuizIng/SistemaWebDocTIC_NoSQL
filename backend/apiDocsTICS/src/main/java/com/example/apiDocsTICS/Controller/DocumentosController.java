@@ -3,6 +3,8 @@ package com.example.apiDocsTICS.Controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.apiDocsTICS.DTO.AccionUsuarioDTO;
+import com.example.apiDocsTICS.Exception.AccesoNoPermitidoException;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,6 +54,79 @@ public class DocumentosController {
                 .collect(Collectors.toList());
         return new ResponseEntity<>(documentosDTO, HttpStatus.OK);
     }
+
+
+    @PostMapping("/{documentoId}/valorar")
+    public ResponseEntity<?> valorarDocumento(
+            @PathVariable String documentoId,
+            @RequestParam String usuarioId,
+            @RequestBody ValoracionDTO valoracionDTO) {
+
+        try {
+            ObjectId docId = new ObjectId(documentoId);
+            ObjectId userId = new ObjectId(usuarioId);
+
+            String resultado = documentosService.valorarDocumento(docId, userId, valoracionDTO);
+
+            return new ResponseEntity<>(resultado, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID inválido");
+        } catch (RecursoNoEncontradoException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (AccesoNoPermitidoException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al valorar el documento");
+        }
+    }
+
+    @PostMapping("/{documentoId}/ver")
+    public ResponseEntity<?> registrarVista(
+            @PathVariable String documentoId,
+            @RequestBody AccionUsuarioDTO accionUsuarioDTO) {
+
+        try {
+            ObjectId docId = new ObjectId(documentoId);
+            ObjectId userId = new ObjectId(accionUsuarioDTO.getUsuarioId());
+
+            String resultado = documentosService.registrarVista(docId, userId);
+
+            return new ResponseEntity<>(resultado, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID inválido");
+        } catch (RecursoNoEncontradoException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (AccesoNoPermitidoException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al registrar la vista");
+        }
+    }
+
+    @PostMapping("/{documentoId}/descargar")
+    public ResponseEntity<?> registrarDescarga(
+            @PathVariable String documentoId,
+            @RequestBody AccionUsuarioDTO accionUsuarioDTO) {
+
+        try {
+            ObjectId docId = new ObjectId(documentoId);
+            ObjectId userId = new ObjectId(accionUsuarioDTO.getUsuarioId());
+
+            String resultado = documentosService.registrarDescarga(docId, userId);
+
+            return new ResponseEntity<>(resultado, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID inválido");
+        } catch (RecursoNoEncontradoException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (AccesoNoPermitidoException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al registrar la descarga");
+        }
+    }
+
+
 
     // Métodos de ayuda para mapear entre Model y DTO
     private DocumentosModel mapDTOToModel(DocumentosDTO dto) {
