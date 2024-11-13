@@ -47,6 +47,9 @@ public class ComentariosController {
     @PostMapping("/insertar")
     public ResponseEntity<String> crearComentario(@RequestBody ComentariosModel comentario) {
         String resultado = comentariosService.CrearComentario(comentario);
+        if (resultado.equals("El usuario no ha visto el documento y no puede comentar.")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(resultado);
+        }
         return ResponseEntity.ok(resultado);
     }
 

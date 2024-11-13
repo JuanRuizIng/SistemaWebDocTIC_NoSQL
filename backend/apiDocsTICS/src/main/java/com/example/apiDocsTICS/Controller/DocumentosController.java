@@ -3,19 +3,32 @@ package com.example.apiDocsTICS.Controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.apiDocsTICS.DTO.AccionUsuarioDTO;
-import com.example.apiDocsTICS.Exception.AccesoNoPermitidoException;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.example.apiDocsTICS.DTO.AccionUsuarioDTO;
 import com.example.apiDocsTICS.DTO.DocumentosDTO;
-import com.example.apiDocsTICS.DTO.Documents.*;
+import com.example.apiDocsTICS.DTO.Documents.CategoriaDTO;
+import com.example.apiDocsTICS.DTO.Documents.DescargaDTO;
+import com.example.apiDocsTICS.DTO.Documents.InfoAutorDTO;
+import com.example.apiDocsTICS.DTO.Documents.ValoracionDTO;
+import com.example.apiDocsTICS.DTO.Documents.VistaDTO;
+import com.example.apiDocsTICS.Exception.AccesoNoPermitidoException;
 import com.example.apiDocsTICS.Exception.RecursoNoEncontradoException;
 import com.example.apiDocsTICS.Model.DocumentosModel;
-import com.example.apiDocsTICS.Model.Documents.*;
+import com.example.apiDocsTICS.Model.Documents.Categoria;
+import com.example.apiDocsTICS.Model.Documents.Descarga;
+import com.example.apiDocsTICS.Model.Documents.InfoAutor;
+import com.example.apiDocsTICS.Model.Documents.Valoracion;
+import com.example.apiDocsTICS.Model.Documents.Vista;
 import com.example.apiDocsTICS.Service.IDocumetosService;
 
 @RestController
@@ -59,12 +72,11 @@ public class DocumentosController {
     @PostMapping("/{documentoId}/valorar")
     public ResponseEntity<?> valorarDocumento(
             @PathVariable String documentoId,
-            @RequestParam String usuarioId,
             @RequestBody ValoracionDTO valoracionDTO) {
 
         try {
             ObjectId docId = new ObjectId(documentoId);
-            ObjectId userId = new ObjectId(usuarioId);
+            ObjectId userId = new ObjectId(valoracionDTO.getUsuarioId());
 
             String resultado = documentosService.valorarDocumento(docId, userId, valoracionDTO);
 
